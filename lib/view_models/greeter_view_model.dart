@@ -13,4 +13,10 @@ class GreeterViewModel extends ViewModel {
     greetingMessage = await greeterService.greet(name);
     setState(ViewState.Idle);
   }
+
+  void clear() {
+    setState(ViewState.Busy);
+    greetingMessage = null;
+    setState(ViewState.Idle);
+  }
 }

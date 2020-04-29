@@ -76,23 +76,26 @@ class GreeterPage extends StatelessWidget {
               ),
               Expanded(
                 child: Center(
-                    child: _viewModel.state == ViewState.Busy
-                        ? CircularProgressIndicator()
-                        : Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              Text(
-                                _viewModel.greetingMessage ?? 'No data yet',
-                                style: Theme.of(context).textTheme.display1,
-                              ),
-                              IconButton(
-                                icon: Icon(Icons.clear),
-                                onPressed: () {
-                                  nameEditingController.clear();
-                                },
-                              )
-                            ],
-                          )),
+                    child: _viewModel.greetingMessage != null
+                        ? (_viewModel.state == ViewState.Busy
+                            ? CircularProgressIndicator()
+                            : Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  Text(
+                                    _viewModel.greetingMessage ?? 'No data yet',
+                                    style: Theme.of(context).textTheme.display1,
+                                  ),
+                                  IconButton(
+                                    icon: Icon(Icons.clear),
+                                    onPressed: () {
+                                      nameEditingController.clear();
+                                      _viewModel.clear();
+                                    },
+                                  )
+                                ],
+                              ))
+                        : Text('Nothing here yet')),
               )
             ],
           ),
