@@ -1,7 +1,7 @@
 name: greeter
 description: A Greeter application.
 
-publish_to: 'none'
+publish_to: "none"
 
 version: 1.0.0+1
 
@@ -16,7 +16,8 @@ dependencies:
   meta: ^1.1.8
   built_value: ^7.1.0
   built_collection: ^4.3.2
-  rxdart: ^0.24.0
+  provider: ^4.0.5+1
+  get_it: ^4.0.2
 
 dev_dependencies:
   flutter_test:

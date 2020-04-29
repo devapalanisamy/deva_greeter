@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:greeter/core/result.dart';
-import 'package:greeter/models/greeting.dart';
-import 'package:greeter/services/greeter_service.dart';
-import 'package:greeter/utils/id_generator.dart';
+import 'package:greeter/core/view_model.dart';
+import 'package:greeter/locator.dart';
 import 'package:greeter/view_models/greeter_view_model.dart';
+import 'package:greeter/views/base_view.dart';
 
 void main() {
+  setupLocator();
   runApp(GreeterApp());
 }
 
@@ -47,89 +47,55 @@ class Dashboard extends StatelessWidget {
   }
 }
 
-class GreeterPage extends StatefulWidget {
-  @override
-  _GreeterPageState createState() => _GreeterPageState();
-}
-
-class _GreeterPageState extends State<GreeterPage> {
-  GreeterViewModel _viewModel;
-
-  @override
-  void initState() {
-    super.initState();
-    final idGenerator = IdGenerator();
-    final greeterService = GreeterService(idGenerator);
-    _viewModel = GreeterViewModel(greeterService)..init();
-  }
-
-  @override
-  void dispose() {
-    _viewModel.dispose();
-    super.dispose();
-  }
-
+class GreeterPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Greeter'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            TextField(
-              onChanged: _viewModel.name.add,
-              decoration: InputDecoration(
-                filled: true,
-                hintText: 'Enter your name',
-              ),
-            ),
-            RaisedButton(
-              child: Text('Greet'),
-              onPressed: () {
-                _viewModel.greetEvent.add(true);
-              },
-            ),
-            Expanded(
-              child: Center(
-                child: StreamBuilder<Result<Greeting>>(
-                  initialData: _viewModel.greeting.value,
-                  stream: _viewModel.greeting,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      final result = snapshot.data;
-                      if (result.isAwaiting) {
-                        return CircularProgressIndicator();
-                      } else {
-                        return Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Text(
-                              result.value.value,
-                              style: Theme.of(context).textTheme.display1,
-                            ),
-                            IconButton(
-                              icon: Icon(Icons.clear),
-                              onPressed: () {
-                                _viewModel.greetEvent.add(false);
-                              },
-                            )
-                          ],
-                        );
-                      }
-                    } else if (snapshot.hasError) {
-                      return Text('Error: ${snapshot.error}');
-                    } else {
-                      return Text('Nothing here yet...');
-                    }
-                  },
+    TextEditingController nameEditingController = TextEditingController();
+    return BaseView<GreeterViewModel>(
+      builder: (context, _viewModel, _) => Scaffold(
+        appBar: AppBar(
+          title: Text('Greeter'),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              TextField(
+                controller: nameEditingController,
+                decoration: InputDecoration(
+                  filled: true,
+                  hintText: 'Enter your name',
                 ),
               ),
-            )
-          ],
+              RaisedButton(
+                child: Text('Greet'),
+                onPressed: () {
+                  _viewModel.getGreeting(nameEditingController.text);
+                },
+              ),
+              Expanded(
+                child: Center(
+                    child: _viewModel.state == ViewState.Busy
+                        ? CircularProgressIndicator()
+                        : Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Text(
+                                _viewModel.greetingMessage ?? 'No data yet',
+                                style: Theme.of(context).textTheme.display1,
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.clear),
+                                onPressed: () {
+                                  nameEditingController.clear();
+                                },
+                              )
+                            ],
+                          )),
+              )
+            ],
+          ),
         ),
       ),
     );

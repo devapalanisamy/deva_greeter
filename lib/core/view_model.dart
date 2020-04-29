@@ -1,14 +1,17 @@
-import 'package:greeter/core/result.dart';
-import 'package:meta/meta.dart';
-import 'package:rxdart/rxdart.dart';
+import 'package:flutter/foundation.dart';
 
-abstract class ViewModel {
-  final subscriptions = CompositeSubscription();
+abstract class ViewModel with ChangeNotifier {
+  ViewState _state = ViewState.Idle;
 
-  void init() {}
+  ViewState get state => _state;
 
-  @mustCallSuper
-  void dispose() {
-    subscriptions.dispose();
+  void setState(ViewState newState) {
+    _state = newState;
+    notifyListeners();
   }
+
+  @override
+  void dispose();
 }
+
+enum ViewState { Idle, Busy }
