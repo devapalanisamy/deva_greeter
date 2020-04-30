@@ -34,26 +34,8 @@ class MockIdGenerator extends Mock implements IdGenerator {}
 
 void main() {
   test('GreeterService.greet', () async {
-    final now = DateTime.now();
-    TimeUtils.setNow(now);
-
-    final idGenerator = MockIdGenerator();
-
-    when(idGenerator.generateId()).thenReturn('G1');
-
-    final greeterService = GreeterService(idGenerator);
-
-    final greetee = Greetee((b) => b
-      ..id = 'G1'
-      ..name = 'John');
-
-    final greeting = Greeting((b) => b
-      ..id = 'G1'
-      ..value = 'Hello, John!'
-      ..timestamp = now);
-
-    final greetingStream = greeterService.greet(greetee);
-
-    await expectLater(greetingStream, emitsInOrder([greeting]));
+    final greeterService = GreeterService(IdGenerator());
+    final greeting = await greeterService.greet('Deva');
+    await expectLater(greeting, 'Hello, Deva!');
   });
 }

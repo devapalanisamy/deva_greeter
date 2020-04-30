@@ -10,6 +10,7 @@ class GreeterViewModel extends ViewModel {
       StreamController<String>();
 
   Future getGreeting(String name) async {
+    greetingMessageController.add('showProgress');
     String greetingMessage = await greeterService.greet(name);
     greetingMessageController.add(greetingMessage);
   }
