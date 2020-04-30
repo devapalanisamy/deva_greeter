@@ -6,17 +6,15 @@ class GreeterViewModel extends ViewModel {
   final GreeterService greeterService;
   GreeterViewModel(this.greeterService);
 
-  String greetingMessage;
+  StreamController<String> greetingMessageController =
+      StreamController<String>();
 
   Future getGreeting(String name) async {
-    setState(ViewState.Busy);
-    greetingMessage = await greeterService.greet(name);
-    setState(ViewState.Idle);
+    String greetingMessage = await greeterService.greet(name);
+    greetingMessageController.add(greetingMessage);
   }
 
   void clear() {
-    setState(ViewState.Busy);
-    greetingMessage = null;
-    setState(ViewState.Idle);
+    greetingMessageController.add('');
   }
 }
